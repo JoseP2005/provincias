@@ -1,28 +1,27 @@
 package dominio;
 
-public class Localidad
-{
+public class Localidad {
     private String nombre;
-    private String numeroDeHabitantes;
-    
-    public void setnombre(String nombre){
-    this.nombre = nombre;
-    }
-    public void setnumeroDeHabitantes(String numeroDeHabitantes){
-    this.numeroDeHabitantes = numeroDeHabitantes;
-    }
-    public String getnombre(){
+    private int numeroDeHabitantes;
+
+    public String getNombre() {
         return nombre;
     }
-    public String getnumeroDeHabitantes(){
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public int getNumeroDeHabitantes() {
         return numeroDeHabitantes;
     }
-    public String toString(){
-		String = España;
-		this.España}
-		
-    public Localidad(String nombre, String numeroDeHabitantes){
-        this.nombre = nombre;
+
+    public void setNumeroDeHabitantes(int numeroDeHabitantes) {
         this.numeroDeHabitantes = numeroDeHabitantes;
+    }
+
+    @Override
+    public String toString() {
+        return "Localidad: " + nombre + ", Habitantes: " + numeroDeHabitantes;
     }
 }
