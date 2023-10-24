@@ -25,6 +25,12 @@ public class Municipio {
 
         return totalHabitantes;
     }
+    public List<Localidad> getLocalidades() {
+        return localidades;
+    }
+    public String getNombre() {
+        return nombre;
+    }
 
     @Override
     public String toString() {

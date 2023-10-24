@@ -25,6 +25,13 @@ public class Provincia {
 
         return totalHabitantes;
     }
+    public List<Municipio> getMunicipios() {
+        return municipios;
+    }
+    public String getNombre() {
+        return nombre;
+    }
+
 
     @Override
     public String toString() {
