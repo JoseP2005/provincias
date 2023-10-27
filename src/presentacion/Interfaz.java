@@ -3,6 +3,10 @@ package presentacion;
 import dominio.Localidad;
 import dominio.Municipio;
 import dominio.Provincia;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import java.util.*;
 
@@ -39,14 +43,16 @@ public class Interfaz {
                     mostrarInformacion();
                     break;
                 case 5:
-                    System.out.println("Gracias por utilizar el programa.");
+                    guardarInformacionEnArchivo();
                     break;
+                case 6:
+                    System.out.println("Gracias por utilizar el programa.");
                 default:
                     System.out.println("Opción no válida. Intente nuevamente.");
                     break;
             }
 
-        } while (opcion != 5);
+        } while (opcion != 6);
     }
 
     private void mostrarMenu() {
@@ -55,7 +61,8 @@ public class Interfaz {
         System.out.println("2. Crear municipios");
         System.out.println("3. Crear provincias");
         System.out.println("4. Mostrar información");
-        System.out.println("5. Salir");
+        System.out.println("5. Guardar la informacion en Archivo");
+        System.out.println("6. Salir");
         System.out.print("Ingrese una opción: ");
     }
 
@@ -248,11 +255,44 @@ public class Interfaz {
             System.out.println("--------------------------------------");
         }
     }
+    private void guardarInformacionEnArchivo() {
+    try {
+        File archivo = new File("informacion.txt"); // Nombre del archivo de salida
+        FileWriter fileWriter = new FileWriter(archivo);
+        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
-    public static void main(String[] args) {
-        Interfaz interfaz = new Interfaz();
-        interfaz.iniciarPrograma();
+        for (Provincia provincia : provincias) {
+            bufferedWriter.write("Provincia: " + provincia.getNombre());
+            bufferedWriter.newLine();
+            bufferedWriter.write("Total habitantes: " + provincia.contarHabitantes());
+            bufferedWriter.newLine();
+            bufferedWriter.write("Municipios:");
+
+            for (Municipio municipio : provincia.getMunicipios()) {
+                bufferedWriter.newLine();
+                bufferedWriter.write("- " + municipio.getNombre());
+                bufferedWriter.newLine();
+                bufferedWriter.write("  Habitantes: " + municipio.contarHabitantes());
+                bufferedWriter.newLine();
+                bufferedWriter.write("  Localidades:");
+
+                for (Localidad localidad : municipio.getLocalidades()) {
+                    bufferedWriter.newLine();
+                    bufferedWriter.write("  - " + localidad.getNombre());
+                    bufferedWriter.newLine();
+                    bufferedWriter.write("    Habitantes: " + localidad.getNumeroDeHabitantes());
+                }
+            }
+        }
+
+        // Cierra el BufferedWriter para asegurarte de que los cambios se escriban en el archivo
+        bufferedWriter.close();
+        System.out.println("Información guardada en el archivo 'informacion.txt'.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+    
 }
 
 
