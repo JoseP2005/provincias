@@ -292,14 +292,7 @@ public class Interfaz {
             e.printStackTrace();
         }
     }
-    
 }
-
-
-
-
-
-
 /*package presentacion;
 import dominio.*;
 import java.util.*;
