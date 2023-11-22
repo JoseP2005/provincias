@@ -3,11 +3,8 @@ package presentacion;
 import dominio.Localidad;
 import dominio.Municipio;
 import dominio.Provincia;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
+import java.io.*;
 import java.util.*;
 
 
@@ -19,6 +16,7 @@ public class Interfaz {
     public Interfaz() {
         provincias = new ArrayList<>();
         sc = new Scanner(System.in);
+        cargarInformacionDeArchivo();
     }
 
     public void iniciarPrograma() {
@@ -256,147 +254,61 @@ public class Interfaz {
         }
     }
     private void guardarInformacionEnArchivo() {
-    try {
-        File archivo = new File("informacion.txt"); // Nombre del archivo de salida
-        FileWriter fileWriter = new FileWriter(archivo);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("informacion.csv"));
 
-        for (Provincia provincia : provincias) {
-            bufferedWriter.write("Provincia: " + provincia.getNombre());
-            bufferedWriter.newLine();
-            bufferedWriter.write("Total habitantes: " + provincia.contarHabitantes());
-            bufferedWriter.newLine();
-            bufferedWriter.write("Municipios:");
+            for (Provincia provincia : provincias) {
+                writer.write(provincia.getNombre() + "," + provincia.contarHabitantes());
 
-            for (Municipio municipio : provincia.getMunicipios()) {
-                bufferedWriter.newLine();
-                bufferedWriter.write("- " + municipio.getNombre());
-                bufferedWriter.newLine();
-                bufferedWriter.write("  Habitantes: " + municipio.contarHabitantes());
-                bufferedWriter.newLine();
-                bufferedWriter.write("  Localidades:");
+                for (Municipio municipio : provincia.getMunicipios()) {
+                    writer.newLine();
+                    writer.write(municipio.getNombre() + "," + municipio.contarHabitantes());
 
-                for (Localidad localidad : municipio.getLocalidades()) {
-                    bufferedWriter.newLine();
-                    bufferedWriter.write("  - " + localidad.getNombre());
-                    bufferedWriter.newLine();
-                    bufferedWriter.write("    Habitantes: " + localidad.getNumeroDeHabitantes());
+                    for (Localidad localidad : municipio.getLocalidades()) {
+                        writer.newLine();
+                        writer.write(localidad.getNombre() + "," + localidad.getNumeroDeHabitantes());
+                    }
+                }
+                writer.newLine();
+            }
+
+            writer.close();
+            System.out.println("Información guardada en el archivo 'informacion.csv'.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private void cargarInformacionDeArchivo() {
+        try {
+            Scanner fileScanner = new Scanner(new File("informacion.csv"));
+            Provincia provincia = null;
+            Municipio municipio = null;
+
+            while (fileScanner.hasNextLine()) {
+                String linea = fileScanner.nextLine();
+                String[] partes = linea.split(",");
+                String nombre = partes[0];
+                int habitantes = Integer.parseInt(partes[1]);
+
+                if (partes.length == 2) {
+                    provincia = new Provincia(nombre);
+                    provincias.add(provincia);
+                } else if (partes.length == 3) {
+                    municipio = new Municipio(nombre);
+                    provincia.agregarMunicipio(municipio);
+                } else if (partes.length == 4) {
+                    Localidad localidad = new Localidad();
+                    localidad.setNombre(nombre);
+                    localidad.setNumeroDeHabitantes(habitantes);
+                    municipio.agregarLocalidad(localidad);
                 }
             }
-        }
 
-        // Cierra el BufferedWriter para asegurarte de que los cambios se escriban en el archivo
-        bufferedWriter.close();
-        System.out.println("Información guardada en el archivo 'informacion.txt'.");
+            fileScanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("No se encontró un archivo de datos. Se iniciará con una lista vacía.");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
-/*package presentacion;
-import dominio.*;
-import java.util.*;
-import java.io.*;
-
-public class Interfaz{
- public static void main(String args[]) {
-    Scanner sc=new Scanner(System.in);
-    String[] Provincias = {"1. Localidad", "2. Municipios", "3. Provincias"};
-
-        System.out.println("Opciones  disponibles:");
-        for (int i = 0; i < Provincias.length; i++) {
-            System.out.println((i + 1) + ". " + Provincias[i]);
-        }
-        int[] nopc1iones = new int[Provincias.length];
-    while (true) {
-            System.out.print("Ingrese el numero de la opcion que quiera crear(0 para finalizar): ");
-            int seleccion = sc.nextInt();
-
-            if (seleccion == 0) {
-                break;
-            } else if (seleccion < 1 || seleccion > Provincias.length) {
-                System.out.println("Selección inválida. Por favor, elija un número válido.");
-                continue;
-            }
-            System.out.print("Ingrese la cantidad de " + Provincias[seleccion - 1] + ": ");
-            int cantidad = sc.nextInt();
-
-            if (cantidad < 0) {
-                System.out.println("La cantidad no puede ser negativa.");
-            } else {
-                for (int i = 0; i < cantidad; i++) {
-                    Localidad localidad = new Localidad();
-                    System.out.print("Ingrese el nombre de la localidad: ");
-                    String l1 = sc.next();
-                    localidad.setNombre(l1);
-                    System.out.println("Ingrese el numero de habitantes: ");
-                    int nh1 = sc.nextInt();
-                    localidad.setNumeroDeHabitantes(nh1);
-                }
-                for (int i = 1; i < cantidad; i++) {
-                    
-                    System.out.println("Ingrese el nombre del municipio al que pertenecen las localidades: ");
-                    String m1 =sc.nextLine();
-                    Municipio municipio = new Municipio(m1);
-                    municipio.agregarLocalidad(null);
-                }
-                for (int i = 2; i < cantidad; i++) {
-                    System.out.println("Ingrese el nombre de la provincia a la que pertenece ");
-                    String p1 =sc.nextLine();
-                    Provincia provincia1 = new Provincia(p1);
-                    provincia1.agregarMunicipio(null);
-                    System.out.println(provincia1);
-                }
-        }
-       
-    }
-}
-}   
-
- /*Localidad localidad1 = new Localidad();
-        System.out.println("Ingrese el nombre de la localidad: ");
-        String l1 = sc.nextLine();
-        localidad1.setNombre(l1);
-        System.out.println("Ingrese el numero de habitantes: ");
-        int nh1 = sc.nextInt();
-        localidad1.setNumeroDeHabitantes(nh1);
-
-		Localidad localidad2 = new Localidad();
-        System.out.println(" Ingrese el nombre de la segunda localiadad: ");
-        String l2 =sc.nextLine();
-		localidad2.setNombre(l2);
-        System.out.println("Ingrese el numero de habitantes de la segunda localidad: ");
-        int nh2 = sc.nextInt();
-		localidad2.setNumeroDeHabitantes(nh2);
-
-        System.out.println("Ingrese el nombre del municipio al que pertenecen las localidades: ");
-        String m1 =sc.nextLine();
-        Municipio municipio1 = new Municipio(m1);
-        municipio1.agregarLocalidad(localidad1);
-		municipio1.agregarLocalidad(localidad2);
-       
-        System.out.println("Ingrese el nombre de la provincia a la que pertenece ");
-        Provincia provincia1 = new Provincia("Madrid");
-        provincia1.agregarMunicipio(municipio1);
-
-        System.out.println(provincia1);
-
-		Localidad localidad3 = new Localidad();
-        localidad3.setNombre("Granollers");
-        localidad3.setNumeroDeHabitantes(3000);
-
-		Localidad localidad4 = new Localidad();
-		localidad4.setNombre("Cardedeu");
-		localidad4.setNumeroDeHabitantes(1000);
-
-		Municipio municipio2 = new Municipio("Barcelona");
-		 municipio2.agregarLocalidad(localidad3);
-		 municipio2.agregarLocalidad(localidad4);
-
-		Provincia provincia2 = new Provincia("Cataluña");
-        provincia2.agregarMunicipio(municipio2);
-
-		System.out.println(provincia2);
-    }
- {
-        */
